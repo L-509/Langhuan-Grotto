@@ -1,0 +1,14 @@
+# 排除 Obsidian 的工作区状态（不同设备不同）
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+
+# 排除插件的运行时缓存
+.obsidian/plugins/*/data.json
+.obsidian/cache/
+
+# 排除系统垃圾文件
+.DS_Store
+Thumbs.db
+
+# 排除回收站
+.trash/
