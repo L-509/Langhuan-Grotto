@@ -1,24 +1,24 @@
 # 零、业务常用操作
 ```shell
 # 查找目录下whl包 除了pip-build-deps 并 cp到目标路径
-find ./ -name` `"*.whl"` `-not -path` `"*/pip-build-deps/*"
-find ./ -name` `"*.whl"` `-not -path` `"*/pip-build-deps/*"` `-exec cp {} /target/path/ \;
+find ./ -name "*.whl" -not -path "*/pip-build-deps/*"
+find ./ -name "*.whl" -not -path "*/pip-build-deps/*" -exec cp {} /target/path/ \;
 
 # 命令放到后台执行 并查看日志
-nohup cmd >> cmd.log` `2``>&``1` `&
+nohup cmd >> cmd.log 2>&1 &
 jobs -l
 tail -f cmd.log
 
 # 同步文件
 rsync -avPh --delete user@IP dir tar_dir
 
-# 网络挂盘 自启动`
-vim /etc/fstab`
-10.7``.``67.203``:/data/public_backup /``public` `nfs defaults,_netdev,noatime` `0` `0`
+# 网络挂盘 自启动
+vim /etc/fstab
+IP:/data/ /public nfs defaults,_netdev,noatime 0 0
 
-# 杀进程` 
-pkill -f -15 `'serve'` `&& sleep` `3` `&& pgrep -f` `'serve'` `&& pkill -f -`9` `'serve'`
-pkill -f -15` `'VLLM'` `&& sleep` `3` `&& pgrep -f` `'VLLM'` `&& pkill -f `9` `'VLLM'`
+# 杀进程
+pkill -f -15 'serve' && sleep 3 && pgrep -f 'serve' && pkill -f -9 'serve'
+pkill -f -15` 'VLLM' && sleep 3 && pgrep -f 'VLLM' && pkill -f 9 'VLLM'
 ```
 
 
