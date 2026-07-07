@@ -64,53 +64,48 @@ pkill -f -15` 'VLLM' && sleep 3 && pgrep -f 'VLLM' && pkill -f 9 'VLLM'
 #### 1. 查找并过滤（`grep`）
 
 - **场景**：在日志中找错误，或过滤进程。
-    
 - **命令**：
-    
-      
-    
-    |   |
-    |---|
-    |`# 在 system.log 中查找包含` `"ERROR"` `的行（忽略大小写）`<br><br>`cat /var/log/system.log \| grep -i` `"error"`<br><br>`# 查看所有 Python 进程（排除 grep 自身）`<br><br>`ps aux \| grep python \| grep -v grep`<br><br>`# 更优雅的写法（用 pgrep）`<br><br>`pgrep -la python`|
-    
+```shell
+# 在 system.log 中查找包含 "ERROR" 的行（忽略大小写） 
+cat /var/log/system.log | grep -i "error" 
+# 查看所有 Python 进程（排除 grep 自身） 
+ps aux | grep python | grep -v grep # 更优雅的写法（用 pgrep） pgrep -la python
+```
 
 #### 2. 统计与排序（`wc` + `sort` + `uniq`）
 
 - **场景**：统计日志行数、访问量排序。
-    
 - **命令**
-    
-    |   |
-    |---|
-    |`# 统计当前目录下有多少个 .log 文件`<br><br>`ls -la \| grep` `".log"` `\| wc -l`<br><br>`# 统计 Nginx 日志中访问量最高的` `10` `个 IP`<br><br>`cat access.log \| awk` `'{print $1}'` `\| sort \| uniq -c \| sort -nr \| head -``10`<br><br>`(拆解：awk取第一列IP → sort排序 → uniq -c统计次数 → sort -nr按数字倒序 → 取前``10``)`|
-    
-      
-    
+```shell
+# 统计当前目录下有多少个 .log 文件 
+ls -la | grep ".log" | wc -l 
+# 统计 Nginx 日志中访问量最高的 10 个 IP 
+cat access.log | awk '{print $1}' | sort | uniq -c | sort -nr | head -10 
+(拆解：awk取第一列IP → sort排序 → uniq -c统计次数 → sort -nr按数字倒序 → 取前10)
+```
+
 
 #### 3. 替换与切割（`sed` + `awk`）
 
 - **场景**：批量替换配置文件内容，或提取特定列。
-    
 - **命令**：  
-    bash
-    
-    # 将 config.txt 中的所有 "old" 替换为 "new"（直接修改文件需加 -i）
-    sed 's/old/new/g' config.txt
-    
-    # 查看当前目录下所有文件的大小（按列取第5列）
-    ls -lh | awk '{print $5 "\t" $9}'
-    
-
+```shell
+# 将 config.txt 中的所有 "old" 替换为 "new"（直接修改文件需加 -i） 
+sed 's/old/new/g' config.txt 
+# 查看当前目录下所有文件的大小（按列取第5列） 
+ls -lh | awk '{print $5 "\t" $9}'
+```
+ 
 #### 4. 快速查找文件（`find` + `xargs`）
 
 - **场景**：批量删除或移动大量文件。
-    
 - **命令**：
-    
-    |   |
-    |---|
-    |`# 找到当前目录下所有 .tmp 文件并删除（比 rm -rf 更可控）`<br><br>`find . -name` `"*.tmp"` `-type f \| xargs rm -f`<br><br>`# 查找最近` `7` `天内修改过的文件`<br><br>`find /home -mtime -``7` `-type f`|
-    
+```shell
+# 找到当前目录下所有 .tmp 文件并删除（比 rm -rf 更可控） 
+find . -name "*.tmp" -type f | xargs rm -f 
+# 查找最近 7 天内修改过的文件 
+find /home -mtime -7 -type f
+```
 
 ---
 
@@ -118,20 +113,19 @@ pkill -f -15` 'VLLM' && sleep 3 && pgrep -f 'VLLM' && pkill -f 9 'VLLM'
 
 用于**条件执行**，常见于脚本或一键部署。
 
-|`&&`|**前成功**才执行后（短路与）|`mkdir test && cd test` （只有创建成功才进入）|
-|`\|`|**前失败**才执行后（短路或）|`command \| echo "执行失败，请检查"`|
-|`;`|顺序执行，无关成败|`make clean ; make` （不管是否clean成功，都执行make）|
-|`&`|放入后台运行|`python app.py &` （终端关闭任务会中止，建议用`nohup`）|
-|`\`|换行续接（美化长命令）|`docker build -t myapp . \`  <br>`--build-arg env=prod`|
+| 符号   | 含义               | 示例                                                      |
+| ---- | ---------------- | ------------------------------------------------------- |
+| `&&` | **前成功**才执行后（短路与） | `mkdir test && cd test` （只有创建成功才进入）                     |
+| `\|` | **前失败**才执行后（短路或） | `command \| echo "执行失败，请检查"`                            |
+| `;`  | 顺序执行，无关成败        | `make clean ; make` （不管是否clean成功，都执行make）               |
+| `&`  | 放入后台运行           | `python app.py &` （终端关闭任务会中止，建议用`nohup`）                |
+| `\`  | 换行续接（美化长命令）      | `docker build -t myapp . \`  <br>`--build-arg env=prod` |
 
 **实战组合技（一键更新代码）：**
-
-|   |
-|---|
-|`git pull && mvn clean` `package` `&& systemctl restart myapp \| echo` `"部署失败，请回滚"`|
-
+```shell
+git pull && mvn clean package && systemctl restart myapp || echo "部署失败，请回滚"
+```
   
-
 ---
 
 ### 四、 高级高效技巧（必知必会）
@@ -139,36 +133,26 @@ pkill -f -15` 'VLLM' && sleep 3 && pgrep -f 'VLLM' && pkill -f 9 'VLLM'
 #### 1. 命令历史快捷操作
 
 - `!!`：执行上一条命令（权限不足时：`sudo !!`）。
-    
 - `!$`：上一条命令的最后一个参数（如 `mkdir test` 后，`cd !$` 直接进入）。
-    
 - `Ctrl + R`：**反向搜索**历史命令（输入关键字，按`Ctrl+R`循环查找）。
-    
 
 #### 2. 文本处理三板斧（文本分析神器）
-
-|   |
-|---|
-|`# 查看内存前``3``高的进程（按第``4``列排序）`<br><br>`ps aux \| sort -k4 -nr \| head -``3`<br><br>`# 统计当前目录各后缀名的文件数量`<br><br>`ls \| sed` `'s/.*\.//'` `\| sort \| uniq -c`|
-
+```shell
+# 查看内存前3高的进程（按第4列排序） 
+ps aux | sort -k4 -nr | head -3 
+# 统计当前目录各后缀名的文件数量 
+ls | sed 's/.*\.//' | sort | uniq -c
+```
 #### 3. 后台保持运行（`screen` / `nohup`）
 
 - `nohup ./long_task.sh &`：即使SSH断开，任务仍在后台跑（输出写入`nohup.out`）。
-    
 - `screen -S task` 开启新会话，`Ctrl+A+D` 分离，`screen -r task` 恢复。
-    
 
 ---
 
 ### 五、 避坑提醒（安全意识）
 
 1. **`rm -rf`** 前务必用 `ls` 确认路径，建议用 `find` + `xargs` 替代。
-    
 2. **重定向覆盖**：`>` 会清空文件，想追加请用 `>>`。
-    
 3. **变量空格**：`a = 1` 是错的，必须是 `a=1`（等号两边无空格）。
-    
 4. **引号区别**：双引号`"`内`$变量`会解析，单引号`'`内全部视为纯文本。
-    
-
-[](https://out-wiki.tsingmicro.xyz/pages/viewpage.action?pageId=97149034)
